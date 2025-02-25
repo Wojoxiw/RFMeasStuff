@@ -1,0 +1,7 @@
+*.h5
+*.npz
+*.xdmf
+*.msh
+*.project
+.settings
+*.pydevproject
