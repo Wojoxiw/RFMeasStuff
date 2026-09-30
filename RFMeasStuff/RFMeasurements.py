@@ -2,6 +2,7 @@
 from scipy.constants import c, pi, elementary_charge, k
 import scipy
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import skrf as rf
@@ -88,7 +89,7 @@ def driftComp(interpPhi, interpM, data, rawData, tbM, tbFM, BGs, nBGs, monostati
     
     return returnData #returnData ##the drift compensated data at time t
     
-def plotBackgroundSubtractionStats(data, tgS21, tgS11, timePassed): ##ata is the set of backgrounds - tg is the time-gating -- timePassed is the time between first and last measurement, for calibration purposes
+def plotBackgroundSubtractionStats(data, tgS21, tgS11, timePassed): ##data is the set of backgrounds - tg is the time-gating -- timePassed is the time between first and last measurement, for calibration purposes
     freqRange = '6.6-15ghz'
     font = {'size'   : 20}
     plt.rc('font', **font)
@@ -203,46 +204,46 @@ def plotBackgroundSubtractionStats(data, tgS21, tgS11, timePassed): ##ata is the
         interperMS11b.append(scipy.interpolate.CubicSpline(bGMTs+h*tbFM, (np.abs(np.transpose(data11)[h])-np.abs(np.transpose(data11)[h][0]))/np.abs(np.transpose(data11)[h][0])))
     
     ###these gives a different interpolation and are packaged differently (Because of time point differences?)
-    interperPhiS21 = scipy.interpolate.CubicSpline(bGMTs, (-np.unwrap(np.angle(data21[:])-np.angle(data21[0]), axis = 1))) ## interp(Times)[:,500] = interpolation at times for frequency pt. 500
-    interperPhiS11 = scipy.interpolate.CubicSpline(bGMTs, (-np.unwrap(np.angle(data11[:])-np.angle(data11[0]), axis = 1)))
+    interperPhiS21 = scipy.interpolate.CubicSpline(bGMTs, (np.unwrap(np.angle(data21[:])-np.angle(data21[0]), axis = 1))) ## interp(Times)[:,500] = interpolation at times for frequency pt. 500
+    interperPhiS11 = scipy.interpolate.CubicSpline(bGMTs, (np.unwrap(np.angle(data11[:])-np.angle(data11[0]), axis = 1)))
     interperMS21 = scipy.interpolate.CubicSpline(bGMTs, (np.abs(data21[:])-np.abs(data21[0]))/np.abs(data21[0]))
     interperMS11 = scipy.interpolate.CubicSpline(bGMTs, (np.abs(data11[:])-np.abs(data11[0]))/np.abs(data11[0]))
     
     #Everything below here is old/used for plotting
     
- #==============================================================================
- #    ##plotting them all at once
- #    plt.figure(figsize=figSize)
- #    plt.ylabel(r'$\Delta \phi$ [radians]', fontsize = labelFontSize)
- #    plt.xlabel('Time [s]', fontsize = labelFontSize)
- #    plt.title(r'Phase Drift $S_{21}$ $\Delta \phi$ by Time', fontsize = titleFontSize)
- #    b = 0
- #    handleds = []
- #    for i in range(len(data)):
- #        times = (tbB*i+tbFM*np.arange(len(fs)))[ct1:ct2]
- #        plt.plot(times, (-np.unwrap((np.angle(data21[i])-np.angle(data21[b])))*(1))[ct1:ct2], marker = '.', color = colors[i%len(colors)], markersize=2)
- #    handleds.append(mlines.Line2D([], [], color='black', label='No Mean, $\phi^n-\phi^1$', lw=3)) ##fake lines to create legend elements
- # 
- #    for i in range(len(data)-2):
- #        plt.scatter(tbB*(i+1), np.mean(np.mean(phaseDsS21[i+1], axis = 0)[ct1:ct2], axis = 0), marker = 'o', color = colors[(i+1)%len(colors)],edgecolors= "black")
- #    handleds.append(mlines.Line2D([], [], marker='o', color='w', label='Mean of Frequency-Means', markerfacecolor='black', markersize=10)) ##fake lines to create legend elements
- #        
- #    for i in range(len(data)):
- #        plt.scatter(tbB*i, np.mean(-np.unwrap(np.angle(data21[i])-np.angle(data21[b]))[ct1:ct2]), marker = 's', color = colors[i%len(colors)],edgecolors= "black")
- #    handleds.append(mlines.Line2D([], [], marker='s', color='w', label='Frequency-Means of $\phi^n-\phi^1$', markerfacecolor='black', markersize=10)) ##fake lines to create legend elements
- #     
- #    #h=100
- #    #plt.plot(bGMTs+h*tbFM,(-np.unwrap(np.angle(np.transpose(data21)[h])-np.angle(np.transpose(data21)[h][0]))),marker = 'o', label = 'TESTHERE')
- #     
- #    newTs = np.arange(0,5500)
- #    plt.plot(newTs,interperPhiS21b[500](newTs), label = 'Cubic Spline Interpolation')
- #    plt.plot(newTs,interperPhiS21(newTs)[:,500], linestyle = ':', label = 'Cubic Spline Interpolation')
- #    handleds.append(mlines.Line2D([], [], color='b', label='Cubic Spline Interpolation')) ##fake lines to create legend elements, no idea how to avoid this for this line
- #        
- #    plt.tight_layout()
- #    plt.legend(handles=handleds,ncol = 2, fontsize = legendFontSize*2, framealpha=0.4)
- #    plt.show()
- #==============================================================================
+    ##plotting them all at once
+    plt.figure()
+    plt.ylabel(r'Phase Drift [radians] ($\Delta \phi$)', fontsize = labelFontSize)
+    plt.xlabel('Time [hours]', fontsize = labelFontSize)
+    plt.title(r'Phase Drift $S_{21}$ $\Delta \phi$ by Time', fontsize = titleFontSize)
+    b = 0
+    handleds = []
+    for i in range(len(data)):
+        times = (tbB*i+tbFM*np.arange(len(fs)))[ct1:ct2]
+        plt.plot(times/3600, (np.unwrap((np.angle(data21[i])-np.angle(data21[b])))*(1))[ct1:ct2], marker = '.', color = colors[i%len(colors)], markersize=2)
+    handleds.append(mlines.Line2D([], [], color='black', label='Measured $\phi_n-\phi_1$', lw=3)) ##fake lines to create legend elements
+  
+    #===========================================================================
+    # for i in range(len(data)-2):
+    #     plt.scatter(tbB*(i+1), np.mean(np.mean(phaseDsS21[i+1], axis = 0)[ct1:ct2], axis = 0), marker = 'o', color = colors[(i+1)%len(colors)],edgecolors= "black")
+    # #handleds.append(mlines.Line2D([], [], marker='o', color='w', label='Mean of Frequency-Means', markerfacecolor='black', markersize=10)) ##fake lines to create legend elements
+    #===========================================================================
+         
+    for i in range(len(data)):
+        plt.scatter(tbB*i/3600, np.mean(np.unwrap(np.angle(data21[i])-np.angle(data21[b]))[ct1:ct2]), marker = 's', color = colors[i%len(colors)],edgecolors= "black")
+    #handleds.append(mlines.Line2D([], [], marker='s', color='w', label='Frequency-Means of $\phi^n-\phi^1$', markerfacecolor='black', markersize=10)) ##fake lines to create legend elements
+      
+    #h=100
+    #plt.plot(bGMTs+h*tbFM,(-np.unwrap(np.angle(np.transpose(data21)[h])-np.angle(np.transpose(data21)[h][0]))),marker = 'o', label = 'TESTHERE')
+      
+    newTs = np.arange(0,5500)
+    #plt.plot(newTs,interperPhiS21b[500](newTs), linestyle = ':', label = 'Cubic Spline Interpolation')
+    plt.plot(newTs/3600,interperPhiS21(newTs)[:,500], label = 'Cubic Spline Interpolation')
+    handleds.append(mlines.Line2D([], [], color='b', label='Cubic Spline Interpolation')) ##fake lines to create legend elements, no idea how to avoid this for this line
+    plt.grid()
+    plt.legend(handles=handleds,ncol = 1, fontsize = legendFontSize*2, framealpha=0.4)
+    plt.tight_layout()
+    plt.show()
     
     #===========================================================================
     # ###if we plot the mean changes
@@ -569,6 +570,7 @@ def processOneData(data, emptData, trpeak, trpeakw, dAnt, pad, name, makePlots =
     f = data.frequency.f
     data = data.s.squeeze()
     emptData = emptData.s.squeeze()
+    
     if(sphereCalData != None):
         sphereData = sphereCalData[0].s.squeeze()
         if(len(sphereCalData) == 3):
@@ -705,9 +707,109 @@ def processOneData(data, emptData, trpeak, trpeakw, dAnt, pad, name, makePlots =
             ax1.set_title(r"$\sigma_E$ by Frequency for "+name, fontsize = '22')
         
         ax1.grid()
-        plt.xlim(f[0],f[np.alen(f)-1])
+        plt.xlim(f[0],f[len(f)-1])
         fig.tight_layout()
         ax1.legend(fontsize = 14)
+        plt.show()
+        
+    if(makePlots<0): ## make some plots to show off Fourier Transforming/gating
+        figsizex = 4.5
+        figsizey = 3
+        linewidth = 1.2
+        times = dataTPG[3] * 1e9 ## in ns
+        fs = f / 1e9 ## in GHz
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Frequency [GHz]')
+        plt.xlim(fs[0], fs[-1])
+        plt.plot(fs, 20*np.log10(np.abs(data)), label=r'S$_{11}$', color='tab:orange')
+        plt.plot(fs, 20*np.log10(np.abs(data-emptData)), label=r'S$_{11}$ - background', color='tab:blue')
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+        
+        print(len(dataT[3]))
+        print(len(dataTPG[3]))
+        
+        
+        start = np.argmin(np.abs(times/1e9-(trpeak-trpeakw/2)))
+        end = np.argmin(np.abs(times/1e9-(trpeak+trpeakw/2)))
+        gate = np.zeros(len(times))
+        hgat = np.hamming(end-start)  
+        for i in range(len(hgat)):
+            gate[start+i] = hgat[i]**1
+        gate[np.abs(times/1e9-trpeak)<trpeakw/8] = 1
+        
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Time [ns]')
+        plt.xlim(times[0], times[-1])
+        plt.ylim(-190,-50)
+        plt.plot(times, 20*np.log10(np.abs(dataTPG[4])), label=r'S$_{11}$', color='tab:orange')
+        plt.plot(times, 20*np.log10(np.abs(dataTPG[4] - emptTPG[4])), label=r'S$_{11}$ - background', color='tab:blue')
+        #plt.plot(times, 20*np.log10(1e-20+np.abs(gate*np.max(dataTPG[4]-emptTPG[4]))), label=r'Gate Function')
+        plt.legend(loc='lower left')
+        plt.tight_layout()
+        plt.show()
+        
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Time [ns]')
+        plt.xlim(times[0], times[-1])
+        plt.ylim(-190,-100)
+        plt.plot(times, 20*np.log10(np.abs(dataTPG[4]-emptTPG[4])), label=r'S$_{11}$ - background')
+        plt.plot(times, 20*np.log10(1e-20+np.abs(gate*np.max(dataTPG[4]-emptTPG[4]))), color='r', label=r'Gating Function')
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+        
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Time [ns]')
+        plt.xlim(times[0], times[-1])
+        plt.ylim(-190,-100)
+        plt.plot(times, 20*np.log10(np.abs(1e-20 + gate*(dataTPG[4]-emptTPG[4]))), label=r'S$_{11}$ - background, gated')
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+        
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Frequency [GHz]')
+        plt.xlim(fs[0], fs[-1])
+        plt.plot(fs, 20*np.log10(np.abs(dataTPG[2]-emptTPG[2])), label='S$_{11}$, Time-Gated')
+        plt.tight_layout()
+        plt.show()
+        
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Frequency [GHz]')
+        plt.plot(fs, 20*np.log10(np.abs(data-emptData)), label='Unprocessed')
+        plt.plot(fs, 20*np.log10(np.abs(dataT[2]-emptT[2])), label='Time-Gated')
+        plt.plot(fs, 20*np.log10(np.abs(dataTPG[2]-emptTPG[2])), label='Padded + Time-Gated')
+        plt.xlim(fs[0], fs[-1])
+        plt.legend()
+        plt.title('Comparison Plot', fontsize=20)
+        plt.tight_layout()
+        plt.show()
+        
+        fig = plt.figure( figsize=(figsizex, figsizey))
+        plt.grid()
+        plt.ylabel(r'$|$S$_{11}|$ [dB]')
+        plt.xlabel(r'Time [ns]')
+        plt.xlim(-0.9, 0.5)
+        plt.ylim(-85, -52)
+        plt.plot(dataT[3]*1e9, 20*np.log10(np.abs(dataT[4] * 1000/21000)), label=r'S$_{11}$') ## factor to account for fourier transform normalization
+        plt.plot(dataTPG[3]*1e9, 20*np.log10(np.abs((dataTPG[4]))), label=r'S$_{11}$, zero-padded')
+        plt.legend()
+        #plt.title('Time-Domain Peak, Zero-Padding Effect')
+        plt.tight_layout()
         plt.show()
     
     return emptTPG[0], sigETGP
@@ -748,7 +850,7 @@ def BackwardScatteringCS(fs, a):
     #===========================================================================
     return(RCS_back)
     
-def theMainStuff(driftCompensating = False, toPlotComparisons = False):
+def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     
     fileLoc = 'C:/Users/al8032pa/Work Folders/Documents/antenna measurements/'
     
@@ -1597,7 +1699,7 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     # fSetJ, sigball025mmSetJ = processOneData(ball025mmSetJ.s21, ball025mmeSetJ.s21, trpeakI, trpeakIwidth, dAntennas2, pad, 'b2.5', makePlots = 0, sphereCalData=[ball5mmSetJ.s21, 5e-3])
     #===========================================================================
     
-    trpeakSetKMonostatic = 52*1e-9 ##s
+    trpeakSetKMonostatic = 51.2*1e-9 ##s
     trpeakSetKMonostaticwidth = 6*1e-9 ##s
     
     ###use interpolation to compensate for phase/magnitude changes
@@ -1660,7 +1762,7 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     
     fSetK, monoball30mmSetK = processOneData(ball30mmSetK.s11, ball30mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b30', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
     fSetK, monoball25mmSetK = processOneData(ball25mmSetK.s11, ball25mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b25', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
-    fSetK, monoball20mmSetK = processOneData(ball20mmSetK.s11, ball20mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b20', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
+    fSetK, monoball20mmSetK = processOneData(ball20mmSetK.s11, ball20mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b20', makePlots = -1, monostatic = True, interpData = infoToDoDriftInterpolation) ## this one plotted for thesis
     fSetK, monoball15mmSetK = processOneData(ball15mmSetK.s11, ball15mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b15', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
     fSetK, monoball10mmSetK = processOneData(ball10mmSetK.s11, ball10mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b10', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
     fSetK, monoball875mmSetK = processOneData(ball875mmSetK.s11, ball30mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b8.75', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
@@ -1720,12 +1822,12 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     legendFontSize = 16
     
     if(not toPlotComparisons):
-        figsizex = 10.5/1.2
-        figsizey = 6.5/1.2
+        figsizex = 4.5*1.65
+        figsizey = 3*1.65
         fig = plt.figure( figsize=(figsizex, figsizey), dpi=80, facecolor='w', edgecolor='k')
         ax1 = fig.add_subplot(111)
         ax1.set_xlabel('Frequency [GHz]', fontsize = labelFontSize)
-        ax1.set_ylabel(r'$\sigma_E$ [dBsm]', fontsize = labelFontSize)
+        ax1.set_ylabel(r'$\sigma_\mathrm{ext}$ [dBsm]', fontsize = labelFontSize)
         
 
         
@@ -1878,19 +1980,17 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     
     
     
-    #===========================================================================
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball30mmSetK), label = 'ball 30mmSetK', linewidth=linewidth*1.5, color=colors[0%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball25mmSetK), label = 'ball 25mmSetK', linewidth=linewidth*1.5, color=colors[1%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball20mmSetK), label = 'ball 20mmSetK', linewidth=linewidth*1.5, color=colors[2%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball15mmSetK), label = 'ball 15mmSetK', linewidth=linewidth*1.5, color=colors[3%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball10mmSetK), label = 'ball 10mmSetK', linewidth=linewidth*1.5, color=colors[4%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball875mmSetK), label = 'ball 8.75mmSetK', linewidth=linewidth*1.5, color=colors[5%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball635mmSetK), label = 'ball 6.35mmSetK', linewidth=linewidth*1.5, color=colors[7%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball5mmSetK), label = 'ball 5mmSetK', linewidth=linewidth*1.5, color=colors[8%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball3975mmSetK), label = 'ball 3.975mmSetK', linewidth=linewidth*1.5, color=colors[9%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball025mmSetK), label = 'ball 2.5mmSetK', linewidth=linewidth*1.5, color=colors[10%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigball015mmSetK), label = 'ball 1.5mmSetK', linewidth=linewidth*1.5, color=colors[11%len(colors)])
-    #===========================================================================
+    plt.plot(fSetK/1e9, 10*np.log10(sigball30mmSetK), label = 'ball 30mmSetK', linewidth=linewidth*1.5, color=colors[0%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball25mmSetK), label = 'ball 25mmSetK', linewidth=linewidth*1.5, color=colors[1%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball20mmSetK), label = 'ball 20mmSetK', linewidth=linewidth*1.5, color=colors[2%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball15mmSetK), label = 'ball 15mmSetK', linewidth=linewidth*1.5, color=colors[3%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball10mmSetK), label = 'ball 10mmSetK', linewidth=linewidth*1.5, color=colors[4%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball875mmSetK), label = 'ball 8.75mmSetK', linewidth=linewidth*1.5, color=colors[5%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball635mmSetK), label = 'ball 6.35mmSetK', linewidth=linewidth*1.5, color=colors[7%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball5mmSetK), label = 'ball 5mmSetK', linewidth=linewidth*1.5, color=colors[8%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball3975mmSetK), label = 'ball 3.975mmSetK', linewidth=linewidth*1.5, color=colors[9%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball025mmSetK), label = 'ball 2.5mmSetK', linewidth=linewidth*1.5, color=colors[10%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigball015mmSetK), label = 'ball 1.5mmSetK', linewidth=linewidth*1.5, color=colors[11%len(colors)])
     
     #===========================================================================
     # plt.plot(fSetK2/1e9, 10*np.log10(sigball50mmSetK2), label = 'ball 50mmSetK2', linewidth=linewidth*2.5, color=colors[12%len(colors)])
@@ -1942,22 +2042,24 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     
     
  
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[0%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[3%len(colors)])
-    #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[1%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[4%len(colors)])
-                        
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[0%len(colors)])#, label = 'Short Uncloaked'
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[3%len(colors)])#, label = 'Uncloaked'
-    #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK2)**2*BRCSSphereCalAvg), label = 'Long Cloaked', linewidth=linewidth*1.5, color=colors[1%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[4%len(colors)])#, label = 'Prototype Cloaked'
-                        
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[0%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[3%len(colors)])
-    #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[1%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[4%len(colors)])
-                
-    plotMonostaticSim.plotLines()
+    #===========================================================================
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[0%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[3%len(colors)])
+    # #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[4%len(colors)])
+    #                     
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[0%len(colors)])#, label = 'Short Uncloaked'
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[3%len(colors)])#, label = 'Uncloaked'
+    # #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK2)**2*BRCSSphereCalAvg), label = 'Long Cloaked', linewidth=linewidth*1.5, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[4%len(colors)])#, label = 'Prototype Cloaked'
+    #                     
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[0%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[3%len(colors)])
+    # #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[4%len(colors)])
+    #             
+    # plotMonostaticSim.plotLines()
+    #===========================================================================
     
 
     #===========================================================================
@@ -2049,19 +2151,21 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     freqs = np.arange(6.5,15.5, .001)*1e9
     sizes = np.array([30, 25, 20, 15, 10, 8.75, 7.5, 6.35, 5, 3.975, 2.5, 1.5])*1e-3 #radii in m
     
-    #===========================================================================
-    # ##ECS
-    # for i in range(len(sizes)):
-    #     if(i == 6):
-    #         pass
-    #     else:
-    #         F = ForwardFarField(freqs, sizes[i])
-    #         sigma_ext = -np.imag(F*2*c/freqs)
-    #         plt.plot(freqs/1e9, 10*np.log10(sigma_ext), color=colors[i%len(colors)], linestyle = '--')#, label = 'ball '+str(sizes[i]*1e3)+' mm sim')
-    #   
-    # ax1.set_title(r"$\sigma_E$s by Frequency, Padded + Time-Gated", fontsize = '22')
-    # plt.ylim(-75,-20)
-    #===========================================================================
+    ##ECS
+    for i in range(len(sizes)):
+        if(i == 6):
+            pass
+        else:
+            F = ForwardFarField(freqs, sizes[i])
+            sigma_ext = -np.imag(F*2*c/freqs)
+            plt.plot(freqs/1e9, 10*np.log10(sigma_ext), color=colors[i%len(colors)], linestyle = '--')#, label = 'ball '+str(sizes[i]*1e3)+' mm sim')
+       
+    ax1.set_title(r"Extinction cross-section $\sigma_\mathrm{ext}$ by Frequency", fontsize = '22')
+    plt.ylim(-65,-20)
+    plt.xlim(6,15.6)
+    l1, = plt.plot(0, 0, label = 'Calculated', linestyle='--', linewidth = 2, color='black')
+    l2, = plt.plot(0, 0, label = 'Measured', linewidth = 2, color='black')
+    plt.legend(handles=[l1, l2], loc='lower left')
     
     #===========================================================================
     # ###backwards RCS
@@ -2070,10 +2174,12 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     #     plt.plot(freqs/1e9, 10*np.log10(BRCS), color=colors[i%len(colors)], linestyle = '--')#, label = 'ball '+str(sizes[i]*1e3)+' mm sim')
     #===========================================================================
         
-    plt.xlim(6,15.6)
-    ax1.set_ylabel(r'$\sigma_{\mathrm{mono}}$ [dBsm]', fontsize = labelFontSize)
-    ax1.set_title(r"Measured Monostatic RCS $\sigma_{\mathrm{mono}}$ by Frequency", fontsize = titleFontSize)
-    plt.ylim(-80,-20)
+    #===========================================================================
+    # plt.xlim(6,15.6)
+    # ax1.set_ylabel(r'$\sigma_{\mathrm{mono}}$ [dBsm]', fontsize = labelFontSize)
+    # ax1.set_title(r"Monostatic RCS $\sigma_{\mathrm{mono}}$ by Frequency", fontsize = titleFontSize)
+    # plt.ylim(-65,-20)
+    #===========================================================================
     
     ######
     
@@ -2081,10 +2187,19 @@ def theMainStuff(driftCompensating = False, toPlotComparisons = False):
         ax1.grid()
         #plt.xlim(f[0]/1e9,f[np.alen(f)-1]/1e9)
         fig.tight_layout()
-        ax1.legend(fontsize = legendFontSize, framealpha=0.66, ncol=1, loc = 'best')
+        #ax1.legend(fontsize = legendFontSize, framealpha=0.66, ncol=1, loc = 'best')
         plt.show()
 
 
 
 if __name__ == '__main__':
+    matplotlib.use("QtAgg") ## so that plots actually appear
+    plt.rc('axes', titlesize=16)     # fontsize of the axes title
+    plt.rc('axes', labelsize=20)    # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=14)    # fontsize of the tick labels
+    plt.rc('legend', fontsize=14)    # legend fontsize
+    plt.rc('figure', titlesize=30)  # fontsize of the figure title'
+    plt.rc('text', usetex=True) ## use latex to generate the font
+    plt.rc('text.latex', preamble=r'\usepackage{amsmath} \usepackage{bm}') ## load in some packages so I can bold stuff
     theMainStuff()
