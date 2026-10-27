@@ -213,9 +213,9 @@ def plotBackgroundSubtractionStats(data, tgS21, tgS11, timePassed): ##data is th
     
     ##plotting them all at once
     plt.figure()
-    plt.ylabel(r'Phase Drift [radians] ($\Delta \phi$)', fontsize = labelFontSize)
-    plt.xlabel('Time [hours]', fontsize = labelFontSize)
-    plt.title(r'Phase Drift $S_{21}$ $\Delta \phi$ by Time', fontsize = titleFontSize)
+    plt.ylabel(r'Phase Drift [radians] ($\Delta \phi$)')
+    plt.xlabel('Time [hours]')
+    plt.title(r'Phase Drift $S_{21}$ $\Delta \phi$ by Time')
     b = 0
     handleds = []
     for i in range(len(data)):
@@ -235,7 +235,7 @@ def plotBackgroundSubtractionStats(data, tgS21, tgS11, timePassed): ##data is th
       
     #h=100
     #plt.plot(bGMTs+h*tbFM,(-np.unwrap(np.angle(np.transpose(data21)[h])-np.angle(np.transpose(data21)[h][0]))),marker = 'o', label = 'TESTHERE')
-      
+    
     newTs = np.arange(0,5500)
     #plt.plot(newTs,interperPhiS21b[500](newTs), linestyle = ':', label = 'Cubic Spline Interpolation')
     plt.plot(newTs/3600,interperPhiS21(newTs)[:,500], label = 'Cubic Spline Interpolation')
