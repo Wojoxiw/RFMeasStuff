@@ -850,7 +850,7 @@ def BackwardScatteringCS(fs, a):
     #===========================================================================
     return(RCS_back)
     
-def theMainStuff(driftCompensating = True, toPlotComparisons = False):
+def theMainStuff(driftCompensating = False, toPlotComparisons = False):
     
     fileLoc = 'C:/Users/al8032pa/Work Folders/Documents/antenna measurements/'
     
@@ -1762,7 +1762,7 @@ def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     
     fSetK, monoball30mmSetK = processOneData(ball30mmSetK.s11, ball30mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b30', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
     fSetK, monoball25mmSetK = processOneData(ball25mmSetK.s11, ball25mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b25', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
-    fSetK, monoball20mmSetK = processOneData(ball20mmSetK.s11, ball20mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b20', makePlots = -1, monostatic = True, interpData = infoToDoDriftInterpolation) ## this one plotted for thesis
+    fSetK, monoball20mmSetK = processOneData(ball20mmSetK.s11, ball20mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b20', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation) ## this one plotted for thesis
     fSetK, monoball15mmSetK = processOneData(ball15mmSetK.s11, ball15mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b15', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
     fSetK, monoball10mmSetK = processOneData(ball10mmSetK.s11, ball10mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b10', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
     fSetK, monoball875mmSetK = processOneData(ball875mmSetK.s11, ball30mmeSetK.s11, trpeakSetKMonostatic, trpeakSetKMonostaticwidth, dAntennas2, pad, 'b8.75', makePlots = 0, monostatic = True, interpData = infoToDoDriftInterpolation)
@@ -1980,17 +1980,19 @@ def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     
     
     
-    plt.plot(fSetK/1e9, 10*np.log10(sigball30mmSetK), label = 'ball 30mmSetK', linewidth=linewidth*1.5, color=colors[0%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball25mmSetK), label = 'ball 25mmSetK', linewidth=linewidth*1.5, color=colors[1%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball20mmSetK), label = 'ball 20mmSetK', linewidth=linewidth*1.5, color=colors[2%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball15mmSetK), label = 'ball 15mmSetK', linewidth=linewidth*1.5, color=colors[3%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball10mmSetK), label = 'ball 10mmSetK', linewidth=linewidth*1.5, color=colors[4%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball875mmSetK), label = 'ball 8.75mmSetK', linewidth=linewidth*1.5, color=colors[5%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball635mmSetK), label = 'ball 6.35mmSetK', linewidth=linewidth*1.5, color=colors[7%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball5mmSetK), label = 'ball 5mmSetK', linewidth=linewidth*1.5, color=colors[8%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball3975mmSetK), label = 'ball 3.975mmSetK', linewidth=linewidth*1.5, color=colors[9%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball025mmSetK), label = 'ball 2.5mmSetK', linewidth=linewidth*1.5, color=colors[10%len(colors)])
-    plt.plot(fSetK/1e9, 10*np.log10(sigball015mmSetK), label = 'ball 1.5mmSetK', linewidth=linewidth*1.5, color=colors[11%len(colors)])
+    #===========================================================================
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball30mmSetK), label = 'ball 30mmSetK', linewidth=linewidth*1.5, color=colors[0%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball25mmSetK), label = 'ball 25mmSetK', linewidth=linewidth*1.5, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball20mmSetK), label = 'ball 20mmSetK', linewidth=linewidth*1.5, color=colors[2%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball15mmSetK), label = 'ball 15mmSetK', linewidth=linewidth*1.5, color=colors[3%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball10mmSetK), label = 'ball 10mmSetK', linewidth=linewidth*1.5, color=colors[4%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball875mmSetK), label = 'ball 8.75mmSetK', linewidth=linewidth*1.5, color=colors[5%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball635mmSetK), label = 'ball 6.35mmSetK', linewidth=linewidth*1.5, color=colors[7%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball5mmSetK), label = 'ball 5mmSetK', linewidth=linewidth*1.5, color=colors[8%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball3975mmSetK), label = 'ball 3.975mmSetK', linewidth=linewidth*1.5, color=colors[9%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball025mmSetK), label = 'ball 2.5mmSetK', linewidth=linewidth*1.5, color=colors[10%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(sigball015mmSetK), label = 'ball 1.5mmSetK', linewidth=linewidth*1.5, color=colors[11%len(colors)])
+    #===========================================================================
     
     #===========================================================================
     # plt.plot(fSetK2/1e9, 10*np.log10(sigball50mmSetK2), label = 'ball 50mmSetK2', linewidth=linewidth*2.5, color=colors[12%len(colors)])
@@ -2001,22 +2003,20 @@ def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     #===========================================================================
     
     
-    #===========================================================================
-    # plt.plot(fSetK/1e9, 10*np.log10(sigShortUncloakedSetK), linewidth=linewidth*1, color=colors[0%len(colors)])#, label = 'Short Uncloaked')
-    # plt.plot(fSetK/1e9, 10*np.log10(sigUncloakedSetK), linewidth=linewidth*1, color=colors[3%len(colors)])#, label = 'Uncloaked')
-    # #plt.plot(fSetK/1e9, 10*np.log10(sigLongCloakedSetK), linewidth=linewidth*1, color=colors[1%len(colors)])#, label = 'Long Cloaked')
-    # plt.plot(fSetK/1e9, 10*np.log10(sigShortCloakedSetK), linewidth=linewidth*1, color=colors[4%len(colors)])#, label = 'Short Cloaked')
-    #                  
-    # plt.plot(fSetK/1e9, 10*np.log10(sigShortUncloakedSetK2), linewidth=linewidth*1.5, color=colors[0%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigUncloakedSetK2), linewidth=linewidth*1.5, color=colors[3%len(colors)])
-    # #plt.plot(fSetK/1e9, 10*np.log10(sigLongCloakedSetK2), linewidth=linewidth*1.5, color=colors[1%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigShortCloakedSetK2), linewidth=linewidth*1.5, color=colors[4%len(colors)])
-    #                  
-    # plt.plot(fSetK/1e9, 10*np.log10(sigShortUncloakedSetK3), linewidth=linewidth*2, color=colors[0%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigUncloakedSetK3), linewidth=linewidth*2, color=colors[3%len(colors)])
-    # #plt.plot(fSetK/1e9, 10*np.log10(sigLongCloakedSetK3), linewidth=linewidth*2, color=colors[1%len(colors)])
-    # plt.plot(fSetK/1e9, 10*np.log10(sigShortCloakedSetK3), linewidth=linewidth*2, color=colors[4%len(colors)])
-    #===========================================================================
+    plt.plot(fSetK/1e9, 10*np.log10(sigShortUncloakedSetK), linewidth=linewidth*1, color=colors[0%len(colors)])#, label = 'Short Uncloaked')
+    plt.plot(fSetK/1e9, 10*np.log10(sigUncloakedSetK), linewidth=linewidth*1, color=colors[3%len(colors)])#, label = 'Uncloaked')
+    plt.plot(fSetK/1e9, 10*np.log10(sigLongCloakedSetK), linewidth=linewidth*1, color=colors[1%len(colors)])#, label = 'Long Cloaked')
+    plt.plot(fSetK/1e9, 10*np.log10(sigShortCloakedSetK), linewidth=linewidth*1, color=colors[4%len(colors)])#, label = 'Short Cloaked')
+                       
+    plt.plot(fSetK/1e9, 10*np.log10(sigShortUncloakedSetK2), linewidth=linewidth*1.5, color=colors[0%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigUncloakedSetK2), linewidth=linewidth*1.5, color=colors[3%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigLongCloakedSetK2), linewidth=linewidth*1.5, color=colors[1%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigShortCloakedSetK2), linewidth=linewidth*1.5, color=colors[4%len(colors)])
+                       
+    plt.plot(fSetK/1e9, 10*np.log10(sigShortUncloakedSetK3), linewidth=linewidth*2, color=colors[0%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigUncloakedSetK3), linewidth=linewidth*2, color=colors[3%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigLongCloakedSetK3), linewidth=linewidth*2, color=colors[1%len(colors)])
+    plt.plot(fSetK/1e9, 10*np.log10(sigShortCloakedSetK3), linewidth=linewidth*2, color=colors[4%len(colors)])
     
     
     BRCSSphereCalAvg = np.mean(np.array([BackwardScatteringCS(fSetK,25*1e-3),BackwardScatteringCS(fSetK,20*1e-3),BackwardScatteringCS(fSetK,15*1e-3),BackwardScatteringCS(fSetK,10*1e-3),BackwardScatteringCS(fSetK,8.75*1e-3),BackwardScatteringCS(fSetK,6.35*1e-3),BackwardScatteringCS(fSetK,5*1e-3),BackwardScatteringCS(fSetK,3.975*1e-3),BackwardScatteringCS(fSetK,2.5*1e-3)])/np.abs(np.array([monoball25mmSetK, monoball20mmSetK, monoball15mmSetK, monoball10mmSetK, monoball875mmSetK, monoball635mmSetK, monoball5mmSetK, monoball3975mmSetK, monoball025mmSetK]))**2, axis = 0)
@@ -2045,19 +2045,19 @@ def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     #===========================================================================
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[0%len(colors)])
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[3%len(colors)])
-    # #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[1%len(colors)])
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK)**2*BRCSSphereCalAvg), linewidth=linewidth*1, color=colors[4%len(colors)])
-    #                     
+    #                      
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[0%len(colors)])#, label = 'Short Uncloaked'
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[3%len(colors)])#, label = 'Uncloaked'
-    # #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK2)**2*BRCSSphereCalAvg), label = 'Long Cloaked', linewidth=linewidth*1.5, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK2)**2*BRCSSphereCalAvg), label = 'Long Cloaked', linewidth=linewidth*1.5, color=colors[1%len(colors)])
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK2)**2*BRCSSphereCalAvg), linewidth=linewidth*1.5, color=colors[4%len(colors)])#, label = 'Prototype Cloaked'
-    #                     
+    #                      
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortUncloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[0%len(colors)])
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoUncloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[3%len(colors)])
-    # #plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[1%len(colors)])
+    # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoLongCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[1%len(colors)])
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoShortCloakedSetK3)**2*BRCSSphereCalAvg), linewidth=linewidth*2, color=colors[4%len(colors)])
-    #             
+    #              
     # plotMonostaticSim.plotLines()
     #===========================================================================
     
@@ -2145,23 +2145,27 @@ def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     # plt.plot(fSetK/1e9, 10*np.log10(np.abs(monoball015mmSetK)**2*BRCSSphereCal), label = 'ball 1.5mmSetK', linewidth=linewidth*1.5, color=colors[11%len(colors)])
     #===========================================================================
     
-    ###PLOT theoretical SPHERES
-    
-    
-    freqs = np.arange(6.5,15.5, .001)*1e9
-    sizes = np.array([30, 25, 20, 15, 10, 8.75, 7.5, 6.35, 5, 3.975, 2.5, 1.5])*1e-3 #radii in m
-    
-    ##ECS
-    for i in range(len(sizes)):
-        if(i == 6):
-            pass
-        else:
-            F = ForwardFarField(freqs, sizes[i])
-            sigma_ext = -np.imag(F*2*c/freqs)
-            plt.plot(freqs/1e9, 10*np.log10(sigma_ext), color=colors[i%len(colors)], linestyle = '--')#, label = 'ball '+str(sizes[i]*1e3)+' mm sim')
+    #===========================================================================
+    # ###PLOT theoretical SPHERES
+    # 
+    # 
+    # freqs = np.arange(6.5,15.5, .001)*1e9
+    # sizes = np.array([30, 25, 20, 15, 10, 8.75, 7.5, 6.35, 5, 3.975, 2.5, 1.5])*1e-3 #radii in m
+    # 
+    # ##ECS
+    # for i in range(len(sizes)):
+    #     if(i == 6):
+    #         pass
+    #     else:
+    #         F = ForwardFarField(freqs, sizes[i])
+    #         sigma_ext = -np.imag(F*2*c/freqs)
+    #         plt.plot(freqs/1e9, 10*np.log10(sigma_ext), color=colors[i%len(colors)], linestyle = '--')#, label = 'ball '+str(sizes[i]*1e3)+' mm sim')
+    #===========================================================================
+       
+    plotMonostaticSim.plotLines(notMonostatic=True)
        
     ax1.set_title(r"Extinction cross-section $\sigma_\mathrm{ext}$ by Frequency", fontsize = '22')
-    plt.ylim(-65,-20)
+    plt.ylim(-58,-30)
     plt.xlim(6,15.6)
     l1, = plt.plot(0, 0, label = 'Calculated', linestyle='--', linewidth = 2, color='black')
     l2, = plt.plot(0, 0, label = 'Measured', linewidth = 2, color='black')
@@ -2178,7 +2182,7 @@ def theMainStuff(driftCompensating = True, toPlotComparisons = False):
     # plt.xlim(6,15.6)
     # ax1.set_ylabel(r'$\sigma_{\mathrm{mono}}$ [dBsm]', fontsize = labelFontSize)
     # ax1.set_title(r"Monostatic RCS $\sigma_{\mathrm{mono}}$ by Frequency", fontsize = titleFontSize)
-    # plt.ylim(-65,-20)
+    # plt.ylim(-80,-20)
     #===========================================================================
     
     ######
